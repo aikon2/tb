@@ -32,7 +32,6 @@ phpunit.phar
 /views/test
 
 # All
-/assets
 /commands
 /mail
 /tests
