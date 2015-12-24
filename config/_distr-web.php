@@ -36,13 +36,14 @@ $config = [
             'messageConfig' => [
                 'charset'=>'UTF-8',
             ],                                    
-            'transport'=>[
+            //Следующий при использовании другого почтового сервера
+            /*'transport'=>[
                 'class'=>'Swift_SmtpTransport',
                 'host'=>'_%SmtpСервер',
                 'username'=>'_%ИмяПользователя',
                 'password'=>'_%Пароль',
                 'port'=>'25',                
-            ],
+            ],*/
         ],        
         'log' => [
             'traceLevel' => YII_DEBUG ? 3 : 0,
