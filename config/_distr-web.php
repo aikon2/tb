@@ -55,14 +55,14 @@ $config = [
             ],
         ],
         'db' => require(__DIR__ . '/db.php'),
-        /*
-        'urlManager' => [
-            'enablePrettyUrl' => true,
-            'showScriptName' => false,
-            'rules' => [
-            ],
+        'session' => [
+            'class' => 'yii\web\DbSession',
+            // Установите следующее, если вы хотите использовать компонент БД, с названием
+            // отличным от значения по умолчанию 'db'.
+            // 'db' => 'mydb',
+            // Чтобы перезаписать таблицу сессий, заданную по умолчанию, установите
+            // 'sessionTable' => 'my_session',
         ],
-        */
     ],
     'params' => $params,
 ];
