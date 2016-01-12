@@ -1,6 +1,6 @@
 <?php
 
-$this->title = 'TisBOX';
+$this->title = 'TisBOX - визуальная система измерений';
 
 ?>
 <div class="site-index">
