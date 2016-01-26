@@ -8,6 +8,7 @@ $this->title = 'TisBOX - визуальная система измерений'
     <div class="jumbotron">
         <h1>TisBOX</h1>
         <p class="lead">визуальная система измерений</p>      
+        <p><a class="btn btn-lg btn-success" href="/system/">Приступить</a></p>
     </div>
 
     <div class="body-content">

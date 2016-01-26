@@ -30,7 +30,7 @@ class ContactForm extends Model {
             // email has to be a valid email address
             ['email', 'email', 'message' => 'Адрес электронной почты введен некорректно'],
             // verifyCode needs to be entered correctly
-            ['verifyCode', 'captcha'],
+            ['verifyCode', 'captcha', 'message' => 'Проверочный код не верен. Попробуйте сменить код нажав на картинку с кодом'],
         ];
     }
 

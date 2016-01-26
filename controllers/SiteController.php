@@ -5,33 +5,33 @@ namespace app\controllers;
 use Yii;
 use yii\filters\AccessControl;
 use yii\web\Controller;
-use yii\filters\VerbFilter;
+//use yii\filters\VerbFilter;
 use app\models\LoginForm;
 use app\models\ContactForm;
 
 class SiteController extends Controller {
-
+/**
     public function behaviors() {
+        
         return [
             'access' => [
                 'class' => AccessControl::className(),
-                'only' => ['logout'],
+                'only' => ['umenu'],
                 'rules' => [
                     [
-                        'actions' => ['logout'],
+                        'actions' => ['umenu'],
                         'allow' => true,
                         'roles' => ['@'],
                     ],
                 ],
             ],
-            'verbs' => [
-                'class' => VerbFilter::className(),
-                'actions' => [
-                    'logout' => ['post'],
-                ],
-            ],
+            
         ];
+         
     }
+ * 
+ * @return type
+ */
 
     public function actions() {
         return [
@@ -41,6 +41,9 @@ class SiteController extends Controller {
             'captcha' => [
                 'class' => 'yii\captcha\CaptchaAction',
                 'fixedVerifyCode' => YII_ENV_TEST ? 'testme' : null,
+                'height'=>60,
+                'minLength' => 3,
+                'maxLength' => 4,
             ],
         ];
     }
@@ -48,7 +51,7 @@ class SiteController extends Controller {
     public function actionIndex() {
         return $this->render('index');
     }
-
+/**
     public function actionLogin() {
         if (!\Yii::$app->user->isGuest) {
             return $this->goHome();
@@ -68,6 +71,9 @@ class SiteController extends Controller {
 
         return $this->goHome();
     }
+ * 
+ * @return type
+ */
 
     public function actionContact() {
         $model = new ContactForm();
@@ -83,6 +89,9 @@ class SiteController extends Controller {
 
     public function actionAbout() {
         return $this->render('about');
-    }
+    }        
 
+    public function actionUmenu() {
+        return $this->render('umenu');
+    }
 }

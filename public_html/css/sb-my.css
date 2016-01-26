@@ -1,0 +1,18 @@
+
+.sidebar ul li {
+    border-bottom: 1px solid #e7e7e7;
+}
+
+.sidebar ul li a.active {
+    background-color: #eee;
+}
+
+.vcenter {
+  display: inline-block;
+  float: none;
+  vertical-align: middle;
+}
+
+.ramka{
+    border: 1px solid red;
+}
