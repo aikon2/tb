@@ -9,6 +9,7 @@ use yii\bootstrap\Collapse;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use yii\bootstrap\ActiveForm;
+use app\components\AlertWidget;
 
 AppAsset::register($this);
 ?>
@@ -27,7 +28,7 @@ AppAsset::register($this);
          <?php
          $this->beginBody();
          NavBar::begin([
-             'brandLabel' => 'TisBOX',
+             'brandLabel' => 'TisBOX', //<img src="'.\Yii::$app->request->BaseUrl.'/img/logo.png"/>
              'brandUrl' => Yii::$app->homeUrl,
              'renderInnerContainer' => FALSE, //На всю ширину экрана
              'options' => [
@@ -37,6 +38,15 @@ AppAsset::register($this);
          echo Nav::widget([
              'options' => ['class' => 'navbar-nav navbar-right', 'style' => 'padding-right: 40px'],
              'items' => [
+                 Yii::$app->user->identity->superadmin==1 ? (
+                            [
+                                'label' => 'Админка',
+                                'items' => [
+                                    ['label'=>'Test','url' => ['system/test']],
+                                    ['label'=>'УСПД','url' => ['system/action']]
+                                ]
+                            ]
+                            ):(''),
                  [
                      'label' => Yii::$app->user->identity->username,
                      'items' => [
@@ -104,7 +114,7 @@ AppAsset::register($this);
                         <?php
                         echo Html::submitButton(
                                 '<span class="glyphicon glyphicon-search"></span>', [
-                            'class' => 'btn btn-success'
+                            'class' => 'btn btn-success',                                    
                                 ]
                         );
                         ?>
@@ -136,6 +146,7 @@ AppAsset::register($this);
                       'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
                   ])
                   ?>
+                  <?= AlertWidget::widget() //Выводит флеш сообщение ?>
                   <?=
                   $content
                   /* END Body content */
