@@ -80,7 +80,7 @@ class SystemController extends \yii\web\Controller {
          return $this->render('action', [
                      'model' => $model,
                      'ghide' => 1,
-                     'gadr' => '10.24.2.202',
+                     'gadr' => '10.24.2.188',
                      'guser'=>'',
                      'gpass'=>'',
                      'gcommand' => $model->actionstring,

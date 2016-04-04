@@ -41,6 +41,7 @@ AppAsset::register($this);
                     ['label' => 'Главная', 'url' => ['/site/index']],
                     ['label' => 'О Системе', 'url' => ['/site/about']],
                     ['label' => 'Обратная связь', 'url' => ['/site/contact']],
+                    ['label' => 'Форум', 'url' => ['/forum']],
                     // Если гость в меню только вход
                     Yii::$app->user->isGuest ? (
                             ['label' => 'Вход', 'url' => ['/user-management/auth/login']]
