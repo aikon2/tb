@@ -15,13 +15,14 @@ class DeviceSearch extends Device {
 
    public $typeDeviceName;
    public $usdName;
+   
 
    /**
     * @inheritdoc
     */
    public function rules() {
       return [
-          [['id', 'id_type_device', 'id_usd', 'work_device'], 'integer'],
+          [['id', 'id_type_device', 'id_usd', 'work_device'], 'integer'],          
           [['name_device', 'serial'], 'safe'],
           [['typeDeviceName', 'usdName'], 'safe'] //правила вычисляемого атрибута
       ];
@@ -58,22 +59,22 @@ class DeviceSearch extends Device {
        * statement below
        */
       $dataProvider->setSort([
-          'attributes' => [
-              'id',
-              'typeDeviceName' => [
-                  'asc' => ['type_device.name_type' => SORT_ASC],
-                  'desc' => ['type_device.name_type' => SORT_DESC],
-                  'label' => 'Тип прибора'
-              ],
-              'name_device',
-              'serial',
-              'usdName' => [
-                  'asc' => ['usd.name_usd' => SORT_ASC],
-                  'desc' => ['usd.name_usd' => SORT_DESC],
-                  'label' => 'Сборщик'
-              ],
-          ]
-      ]);
+      'attributes' => [
+                        'id',
+                        'typeDeviceName' => [
+                           'asc' => ['type_device.name_type' => SORT_ASC],
+                           'desc' => ['type_device.name_type' => SORT_DESC],
+                           'label' => 'Тип прибора'
+                        ],
+                        'name_device',
+                        'serial',
+                        'usdName' => [
+                           'asc' => ['usd.name_usd' => SORT_ASC],
+                           'desc' => ['usd.name_usd' => SORT_DESC],
+                           'label' => 'Сборщик'
+                        ],
+                        'work_device',         
+                     ]]);
 
       if (!($this->load($params) && $this->validate())) {
          /**

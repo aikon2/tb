@@ -1,8 +1,8 @@
 <?php
 /* @var $this yii\web\View */
 
-$this->title = 'Визуальная система измерений';
-
+$this->title = 'Система';
+$this->params['breadcrumbs'][] = $this->title;
 ?>
 
 

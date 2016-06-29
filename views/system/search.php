@@ -6,6 +6,10 @@
  * and open the template in the editor.
  */
 
+$this->title = 'Поиск';
+$this->params['breadcrumbs'][] = ['label' => 'Система', 'url' => ['/system/index']];
+$this->params['breadcrumbs'][] = $this->title;
+
 use yii\helpers\Html;
 
 

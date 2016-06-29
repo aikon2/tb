@@ -3,14 +3,20 @@
 namespace app\controllers;
 
 use Yii;
-use yii\helpers\Html;
+use yii\helpers\ArrayHelper;
 use app\models\ActionForm;
+
 use yii\web\NotFoundHttpException;
-use yii\base\ErrorException;
+use app\models\system\Vagon;
+use app\models\system\Device;
+use app\models\system\DataListSearch;
+use app\models\system\DataList;
 
 class SystemController extends \yii\web\Controller {
 
    public $layout = 'system'; //Шаблон для этого контроллера выбран system.php
+
+   //Запрет неавторизированного управления
 
    public function behaviors() {
       return [
@@ -23,8 +29,45 @@ class SystemController extends \yii\web\Controller {
    public function actionIndex() {
       return $this->render('index');
    }
-   
-   
+
+   public function actionIn() {  
+        
+      $model = new Device();            
+      //$dataProvider = $searchModel->search(Yii::$app->request->queryParams);      
+      //\Yii::trace('### ### ### Тест лога');
+      //\Yii::trace(Yii::$app->request->post());      
+      if ($model->load(Yii::$app->request->post())) {
+         //\Yii::trace('### ### ### If');
+         //return $this->redirect(['/table/device/view', 'id' => $model->id]);
+         $searchModel = new DataListSearch();
+         $dataProvider = $searchModel->search(
+                 [
+                     'DataListSearch'=>[
+                         'id_device'=> $model->id,
+                         'typeDataRef'=>'b'
+                 ]
+                 ]);         
+         //Получаем массив данных из таблицы
+         $allq=  DataList::find()
+                 ->select(['data_list.id','number','time_point'])
+                 ->joinWith('idDataRef')
+                 ->where(['id_device'=>$model->id,'type_data_ref'=>'b'])
+                 ->createCommand()
+                 ->queryAll();         
+         return $this->render('in', [
+                     'model' => $model,
+                     'r' => 1,
+                     'dataProvider' => $dataProvider,
+                     'qwery'=>$allq
+         ]);         
+      } else {
+         //\Yii::trace('### ### ### Else');
+         return $this->render('in', [
+                     'model' => $model,
+                     'r' => NULL
+         ]);
+      }
+   }   
 
    public function actionTest($message = NULL) {
       if ($message):
@@ -42,9 +85,73 @@ class SystemController extends \yii\web\Controller {
    public function actionImport() {
       return $this->render('import');
    }
-   
+
    public function actionExport() {
       return $this->render('export');
+   }
+
+   public function actionOut($c = NULL, $n1 = 1, $n2 = 1, $t1 = null, $t2 = null, $interval = 'day') {
+
+      $model = new Vagon();
+      $message = NULL;
+
+      if ($c) {
+         switch ($c) {
+            case 'version': {
+                  $message = $model->getVersion();
+                  break;
+               }
+            case 'time': {
+                  $message = $model->getTime();
+                  break;
+               }
+            case 'archive': {
+                  $date = date('YmdHis');
+                  if (is_null($t1)) {
+                     if (is_null($t2))
+                        $t1 = $t2 = $date;
+                     else
+                        $t1 = $t2;
+                  }
+                  else if (is_null($t2))
+                     $t2 = $date;
+                  $message = $model->getArchive($n1, $n2, $t1, $t2);
+                  break;
+               }
+            case 'total': {
+                  $date = date('YmdHis');
+                  if (is_null($t1)) {
+                     if (is_null($t2))
+                        $t1 = $t2 = $date;
+                     else
+                        $t1 = $t2;
+                  }
+                  else if (is_null($t2))
+                     $t2 = $date;
+                  $message = $model->getTotal($n1, $n2, $t1, $t2, $interval);
+                  break;
+               }
+            case 'events': {
+                  $date = date('YmdHis');
+                  if (is_null($t1)) {
+                     if (is_null($t2))
+                        $t1 = $t2 = $date;
+                     else
+                        $t1 = $t2;
+                  }
+                  else if (is_null($t2))
+                     $t2 = $date;
+                  $message = $model->getEvents($n1, $n2, $t1, $t2);
+                  break;
+               }
+            case 'ver': {
+                  $message = 'hoooo';
+                  break;
+               }
+            default: $message = 'Неизвестный запрос';
+         }
+      }      
+      return $this->render('out', ['message' => $message]);
    }
 
    public function actionSearch() {
@@ -69,9 +176,15 @@ class SystemController extends \yii\web\Controller {
 
    public function actionAction() {
 
-      \Yii::trace('### ### ### Тест лога');
-
+      //\Yii::trace('### ### ### Тест лога');
+      //Проверяем был ли выбрана комманда 
       $ids = Yii::$app->request->post('ActionForm');
+      //\Yii::trace(Yii::$app->request->post('ActionForm'));
+      //Проверяем, выбран ли пустой id, если да, то как будто только открыли
+      if (($ids) and ( ArrayHelper::isIn('', $ids))) {
+         $ids = null;
+      }
+      //Для проверки отправки запроса получаем значение
       $page = Yii::$app->request->post('adr');
 
       if ($ids) {
@@ -81,28 +194,33 @@ class SystemController extends \yii\web\Controller {
                      'model' => $model,
                      'ghide' => 1,
                      'gadr' => '10.24.2.188',
-                     'guser'=>'',
-                     'gpass'=>'',
+                     'guser' => '',
+                     'gpass' => '',
+                     'gid' => $model->id,
                      'gcommand' => $model->actionstring,
                      'gparams' => $model->params,
                      'pagein' => '',
                      'pageout' => '',
          ]);
       } elseif ($page) {
-         //Если отправлен запрос         
-         $pagein = 'http://' . Yii::$app->request->post('adr') . '/crq?req=' . Yii::$app->request->post('string').'&'. Yii::$app->request->post('params');
-         $user=Yii::$app->request->post('user');
-         $pass=Yii::$app->request->post('pass');
+         //Если отправлен запрос        
+         $ids = Yii::$app->request->post('id');
+         $model = $this->findModel($ids);
+         $vagon = new Vagon();
+         $pagein = 'http://' . Yii::$app->request->post('adr') . '/crq?req=' . Yii::$app->request->post('string') . '&' . Yii::$app->request->post('params');
+         $user = Yii::$app->request->post('user');
+         $pass = Yii::$app->request->post('pass');
          return $this->render('action', [
-                     'model' => new ActionForm(),
+                     'model' => $model,
                      'ghide' => 2,
                      'gadr' => Yii::$app->request->post('adr'),
-                     'guser'=>$user,
-                     'gpass'=>$pass,
+                     'guser' => $user,
+                     'gpass' => $pass,
+                     'gid' => $model->id,
                      'gcommand' => Yii::$app->request->post('string'),
                      'gparams' => Yii::$app->request->post('params'),
                      'pagein' => $pagein,
-                     'pageout' => $this->getCurlOut($pagein,$user,$pass),
+                     'pageout' => $vagon->getCurlOut($pagein, $user, $pass),
          ]);
       } else {
          //Если форму только открыли         
@@ -110,8 +228,9 @@ class SystemController extends \yii\web\Controller {
                      'model' => new ActionForm(),
                      'ghide' => 0,
                      'gadr' => '',
-                     'guser'=>'',
-                     'gpass'=>'',
+                     'guser' => '',
+                     'gpass' => '',
+                     'gid' => '',
                      'gcommand' => '',
                      'gparams' => '',
                      'pagein' => '',
@@ -124,45 +243,8 @@ class SystemController extends \yii\web\Controller {
       if (($model = ActionForm::findOne($id)) !== null) {
          return $model;
       } else {
-         throw new NotFoundHttpException('The requested page does not exist.');
+         throw new NotFoundHttpException('Запрашиваемая страница не существует.');
       }
    }
- 
-   protected function getCurlOut($param,$user,$pass) {
-      try {
-         $ch = curl_init(); // create cURL handle (ch)
-         if (!$ch) {
-            die("Couldn't initialize a cURL handle");
-         }
-// set some cURL options
-         $ret = curl_setopt($ch, CURLOPT_URL, $param);
-
-         $ret = curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
-         //$ret = curl_setopt($ch, CURLOPT_TIMEOUT, 20); //Таймаут на выполнение
-         if (!empty($user) or !empty($pass)){
-         $ret = curl_setopt($ch, CURLOPT_USERPWD, $user.':'.$pass);
-         }
-         
-// execute
-         $ret = curl_exec($ch);
-
-         $info = curl_getinfo($ch);
-         curl_close($ch); // close cURL handler
-
-         if (empty($info['http_code'])) {
-            return 'ОШИБКА: Нет HTTP кода заголовка';
-         } else {
-            if ($info['http_code'] == 401) {
-               return 'ОШИБКА: 401 Доступ запрещен. Проверте настройки доступа';
-            } else {
-               
-               return Html::encode(iconv('windows-1251', 'utf-8',$ret));
-            }
-         }
-      } catch (ErrorException $e) {
-         Yii::warning($e);
-         return 'ОШИБКА в запросе';
-      }
-   }  
 
 }

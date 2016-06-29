@@ -6,4 +6,6 @@
  */
 /* @var $model app\models\ContactForm */
 
-
+$this->title = 'Импорт';
+$this->params['breadcrumbs'][] = ['label' => 'Система', 'url' => ['/system/index']];
+$this->params['breadcrumbs'][] = $this->title;

@@ -8,6 +8,10 @@ use yii\widgets\Pjax;
 use nirvana\showloading\ShowLoadingAsset;
 ShowLoadingAsset::register($this);
 
+$this->title = 'УСПД';
+$this->params['breadcrumbs'][] = ['label' => 'Система', 'url' => ['/system/index']];
+$this->params['breadcrumbs'][] = mb_substr($this->title, 0, 12,'UTF-8');
+
  $this->registerJs(
    '$("document").ready(function(){
         $("#animname").on("pjax:start", function() { $("#animname").showLoading();});
@@ -44,6 +48,7 @@ ShowLoadingAsset::register($this);
       <div class="form-group">
          <?= Html::label('Комманда:', 'astring'); ?>
          <?= Html::input('text', 'string', $gcommand, ['class' => 'form-control', 'id' => 'astring']); ?>                        
+         <?= Html::input('text', 'id', $gid, ['class' => 'hide']); ?>                        
       </div>
       <div class="form-group">
          <?= Html::label('Параметры:', 'aparams'); ?>

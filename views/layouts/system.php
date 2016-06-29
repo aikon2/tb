@@ -10,8 +10,13 @@ use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
 use yii\bootstrap\ActiveForm;
 use app\components\AlertWidget;
+use webvimark\modules\UserManagement\models\User;
+
+use nirvana\showloading\ShowLoadingAsset;
+ShowLoadingAsset::register($this);
 
 AppAsset::register($this);
+
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -38,12 +43,14 @@ AppAsset::register($this);
          echo Nav::widget([
              'options' => ['class' => 'navbar-nav navbar-right', 'style' => 'padding-right: 40px'],
              'items' => [
-                 Yii::$app->user->identity->superadmin==1 ? (
+                 User::hasRole('admin') ? (
                             [
                                 'label' => 'Админка',
                                 'items' => [
                                     ['label'=>'Test','url' => ['system/test']],
-                                    ['label'=>'УСПД','url' => ['system/action']]
+                                    ['label'=>'УСПД','url' => ['system/action']],
+                                    ['label'=>'Данные','url' => ['system/out']],
+                                    ['label'=>'Получить','url' => ['system/in']]
                                 ]
                             ]
                             ):(''),
@@ -53,6 +60,21 @@ AppAsset::register($this);
                          ['label' => 'Выход', 'url' => ['/user-management/auth/logout']],
                      ],
                  ],
+             ],
+         ]);
+         echo Nav::widget([
+             'options' => ['class' => 'navbar-nav navbar-right', 'style' => 'padding-right: 40px'],
+             'items' => [
+                 User::hasRole('admin') ? (
+                         [
+                             'label' => 'Таблица',
+                             'items' => [                                 
+                                 ['label' => 'Приборы', 'url' => ['/table/device']],
+                                 ['label' => 'Каналы', 'url' => ['/table/data-list']],
+                                 
+                             ]
+                         ]
+                         ) : (''),                 
              ],
          ]);
          NavBar::end();
@@ -139,11 +161,12 @@ AppAsset::register($this);
                   ?>
                </div>
                <?php /* End Sidebar content */ ?>
-               <div class="col-md-10">
-                  <?php
+               <div class="col-md-10 container">
+                  <?=
                   /* Body content */
                   Breadcrumbs::widget([
-                      'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
+                      //'homeLink' => ['label' => 'Система', 'url' => '/system/'],
+                      'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],                      
                   ])
                   ?>
                   <?= AlertWidget::widget() //Выводит флеш сообщение ?>
@@ -153,7 +176,8 @@ AppAsset::register($this);
                   ?>
                </div>
             </div>
-         </div>            
+         </div>                  
+         
       </div>       
       <footer class="footer"><?php /* класс footer - занимает всю ширину окна, но в отлиичии
                    * от wrap, находится всегда внизу */ ?>

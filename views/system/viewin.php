@@ -6,6 +6,4 @@
  * and open the template in the editor.
  */
 
-$this->title = 'Экспорт';
-$this->params['breadcrumbs'][] = ['label' => 'Система', 'url' => ['/system/index']];
-$this->params['breadcrumbs'][] = $this->title;
+echo 'Hello';

@@ -45,17 +45,17 @@ $this->params['breadcrumbs'][] = $this->title;
 
                 <?php $form = ActiveForm::begin(['id' => 'contact-form']); ?>
 
-                    <?= $form->field($model, 'name')->textInput(['autofocus' => true])->label('Имя') ?>
+                    <?= $form->field($model, 'name')->textInput(['autofocus' => true]) ?>
 
-                    <?= $form->field($model, 'email')->label('E-mail') ?>
+                    <?= $form->field($model, 'email') ?>
 
                     <?= $form->field($model, 'subject')->label('Тема') ?>
 
                     <?= $form->field($model, 'body')->textArea(['rows' => 6])->label('Текст сообщения') ?>
 
                     <?= $form->field($model, 'verifyCode')->widget(Captcha::className(), [
-                        'template' => '<div class="row"><div class="col-lg-3">{image}</div><div class="col-lg-6">{input}</div></div>',
-                    ])->label('Код проверки') ?>
+                        'template' => '<div class="row"><div class="col-lg-5"><a title="Нажмите, чтобы сменить">{image}</a></div><div class="col-lg-6">{input}</div></div>',
+                    ])->label('Код проверки')->hint('Нажмите, чтобы сменить') ?>
 
                     <div class="form-group">
                         <?= Html::submitButton('Отправить', ['class' => 'btn btn-primary', 'name' => 'contact-button']) ?>
