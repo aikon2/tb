@@ -33,7 +33,7 @@ class BlockInterval extends \yii\db\ActiveRecord
             //Проверяет чтобы все значения не были пустыми
             [['id_data_list', 'time_interval', 'value', 'status'], 'required'],
             //Целые числа, минимум 0 и выше            
-            [['id_data_list', 'status'], 'integer', 'min'=>0],
+            [['id_data_list', 'status'], 'integer'],
             // Дата формата ... Сдесь минуты символ m!
             [['time_interval'], 'date','format'=>'Y-m-d H:m:s'],
             //Числовое значение            

@@ -37,22 +37,21 @@ class Vagon extends Model {
    }
 
    public function getArchive($n1, $n2, $t1, $t2) {
+      /*
       $pagein = self::USD_ADR . '/crq?req=archive'
               .'&type=b'
               .'&n1='.$n1
               .'&n2='.$n2
               .'&t1='.$t1
-              .'&t2='.$t2;
-      //$pagein = self::USD_ADR . Url::to(['/crq', 'req' => 'archive',
-          //'type' => 'b', 'n1' => $n1, 'n2' => $n2, 't1' => $t1, 't2' => $t2]);      
+              .'&t2='.$t2;*/
+      $pagein = self::USD_ADR . Url::to(['/crq', 'req' => 'archive',
+          'type' => 'b', 'n1' => $n1, 'n2' => $n2, 't1' => $t1, 't2' => $t2]);      
       //return $pagein;
       if ($back = $this->getCurlOut($pagein)) {
          return $this->parseData($back);
       }
       return FALSE;
-   }   
-  
-   
+   }     
    
    public function getTotal($n1, $n2,$t1, $t2, $interval) {
       $pagein = self::USD_ADR . Url::to(['/crq', 'req' => 'total', 
@@ -84,7 +83,7 @@ class Vagon extends Model {
          $ret = curl_setopt($ch, CURLOPT_URL, $param);
          $ret = curl_setopt($ch, CURLOPT_RETURNTRANSFER, 1);
          $ret = curl_setopt($ch, CURLOPT_TIMEOUT, 20); //Таймаут на выполнение
-         if (!empty($user) or ! empty($pass)) {
+         if (!empty($user) or !empty($pass)) {
             $ret = curl_setopt($ch, CURLOPT_USERPWD, $user . ':' . $pass);
          }// execute
          $ret = curl_exec($ch);

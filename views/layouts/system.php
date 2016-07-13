@@ -5,18 +5,20 @@
 use yii\helpers\Html;
 use yii\bootstrap\Nav;
 use yii\bootstrap\NavBar;
-use yii\bootstrap\Collapse;
+//use yii\bootstrap\Collapse;
 use yii\widgets\Breadcrumbs;
 use app\assets\AppAsset;
-use yii\bootstrap\ActiveForm;
+//use yii\bootstrap\ActiveForm;
 use app\components\AlertWidget;
 use webvimark\modules\UserManagement\models\User;
-
 use nirvana\showloading\ShowLoadingAsset;
+use app\models\system\Tree;
+use execut\widget\TreeView;
+use yii\web\JsExpression;
+
 ShowLoadingAsset::register($this);
 
 AppAsset::register($this);
-
 ?>
 <?php $this->beginPage() ?>
 <!DOCTYPE html>
@@ -44,16 +46,16 @@ AppAsset::register($this);
              'options' => ['class' => 'navbar-nav navbar-right', 'style' => 'padding-right: 40px'],
              'items' => [
                  User::hasRole('admin') ? (
-                            [
-                                'label' => 'Админка',
-                                'items' => [
-                                    ['label'=>'Test','url' => ['system/test']],
-                                    ['label'=>'УСПД','url' => ['system/action']],
-                                    ['label'=>'Данные','url' => ['system/out']],
-                                    ['label'=>'Получить','url' => ['system/in']]
-                                ]
-                            ]
-                            ):(''),
+                         [
+                             'label' => 'Админка',
+                             'items' => [
+                                 ['label' => 'Test', 'url' => ['system/test']],
+                                 ['label' => 'УСПД', 'url' => ['system/action']],
+                                 ['label' => 'Данные', 'url' => ['system/out']],
+                                 ['label' => 'Получить', 'url' => ['system/in']]
+                             ]
+                         ]
+                         ) : (''),
                  [
                      'label' => Yii::$app->user->identity->username,
                      'items' => [
@@ -68,13 +70,13 @@ AppAsset::register($this);
                  User::hasRole('admin') ? (
                          [
                              'label' => 'Таблица',
-                             'items' => [                                 
+                             'items' => [
+                                 ['label' => 'Сборщики', 'url' => ['/table/usd']],
                                  ['label' => 'Приборы', 'url' => ['/table/device']],
                                  ['label' => 'Каналы', 'url' => ['/table/data-list']],
-                                 
                              ]
                          ]
-                         ) : (''),                 
+                         ) : (''),
              ],
          ]);
          NavBar::end();
@@ -112,53 +114,90 @@ AppAsset::register($this);
                               ]
                           ]
                   );
-                  //Строка поиска
-                  ActiveForm::begin(
-                          [
-                              'action' => ['system/search'],
-                              'method' => 'post',
-                              'options' => [
-                                  'class' => 'navbar-form'
-                              ]
-                          ]
-                  );
                   ?>
-                  <div class="input-group">
-                     <?php
-                     echo Html::input(
-                             'type: text', 'search', '', [
-                         'placeholder' => 'Найти объект ...',
-                         'class' => 'form-control'
-                             ]
-                     );
-                     ?>
-                     <span class="input-group-btn">                                                                
-                        <?php
-                        echo Html::submitButton(
-                                '<span class="glyphicon glyphicon-search"></span>', [
-                            'class' => 'btn btn-success',                                    
-                                ]
-                        );
-                        ?>
-                     </span>
-                  </div>                        
-                  <?php
-                  ActiveForm::end();
+                  <p></p>
 
-                  //Панель объектов
-                  echo Collapse::widget([
-                      'items' => [
-                          [
-                              'label' => 'Объекты',
-                              'content' => 'Объект №1',
-                              // Открыто по-умолчанию
-                              'contentOptions' => [
-                                  'class' => 'in'
-                              ]
-                          ],
-                      ]
+                  <?php
+                  /*
+                    //Строка поиска
+                    ActiveForm::begin(
+                    [
+                    'action' => ['system/search'],
+                    'method' => 'post',
+                    'options' => [
+                    'class' => 'navbar-form'
+                    ]
+                    ]
+                    );
+                    ?>
+                    <div class="input-group">
+                    <?php
+                    echo Html::input(
+                    'type: text', 'search', '', [
+                    'placeholder' => 'Найти объект ...',
+                    'class' => 'form-control'
+                    ]
+                    );
+                    ?>
+                    <span class="input-group-btn">
+                    <?php
+                    echo Html::submitButton(
+                    '<span class="glyphicon glyphicon-search"></span>', [
+                    'class' => 'btn btn-success',
+                    ]
+                    );
+                    ?>
+                    </span>
+                    </div>
+                    <?php
+                    ActiveForm::end();
+
+                    //Панель объектов
+                    echo Collapse::widget([
+                    'items' => [
+                    [
+                    'label' => 'Объекты',
+                    'content' => 'Объект №1',
+                    // Открыто по-умолчанию
+                    'contentOptions' => [
+                    'class' => 'in'
+                    ]
+                    ],
+                    ]
+                    ]);
+                   * 
+                   */
+
+//Дерево объектов
+//$data=Tree::parseData([1,5]);
+                  $data = Tree::parseData();
+                  $onSelect = new JsExpression(<<<JS
+function (undefined, item) {
+    console.log(item);
+}
+JS
+                  );
+                  $groupsContent = TreeView::widget([
+                              'data' => $data,
+                              //'size' => TreeView::SIZE_SMALL,
+                              'header' => 'Объекты',                              
+                              'searchOptions' => [
+                                  'inputOptions' => [
+                                      'placeholder' => 'Поиск...'
+                                  ],
+                              ],
+                              'clientOptions' => [
+                                  'onNodeSelected' => $onSelect,
+                                  'levels' => 1,
+                              //'selectedBackColor' => 'rgb(40, 153, 57)',
+                              //'borderColor' => '#ff',
+                              ],
                   ]);
+
+
+                  echo $groupsContent;
                   ?>
+
                </div>
                <?php /* End Sidebar content */ ?>
                <div class="col-md-10 container">
@@ -166,7 +205,7 @@ AppAsset::register($this);
                   /* Body content */
                   Breadcrumbs::widget([
                       //'homeLink' => ['label' => 'Система', 'url' => '/system/'],
-                      'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],                      
+                      'links' => isset($this->params['breadcrumbs']) ? $this->params['breadcrumbs'] : [],
                   ])
                   ?>
                   <?= AlertWidget::widget() //Выводит флеш сообщение ?>
@@ -177,7 +216,7 @@ AppAsset::register($this);
                </div>
             </div>
          </div>                  
-         
+
       </div>       
       <footer class="footer"><?php /* класс footer - занимает всю ширину окна, но в отлиичии
                    * от wrap, находится всегда внизу */ ?>

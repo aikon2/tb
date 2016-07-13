@@ -11,6 +11,8 @@ use app\models\system\Vagon;
 use app\models\system\Device;
 use app\models\system\DataListSearch;
 use app\models\system\DataList;
+use app\models\system\Tree;
+
 
 class SystemController extends \yii\web\Controller {
 
@@ -28,6 +30,18 @@ class SystemController extends \yii\web\Controller {
 
    public function actionIndex() {
       return $this->render('index');
+   }   
+   
+   public function actionTree() {
+      return $this->render('tree');
+   }
+   
+   public function actionR1() {
+      return $this->render('r1');
+   }
+   
+   public function actionR2() {
+      return $this->render('r2');
    }
 
    public function actionIn() {  

@@ -1,0 +1,14 @@
+PHP Notice 'yii\base\ErrorException' with message 'Undefined variable: adsf'
+
+in C:\USR\basic\commands\StartController.php:60
+
+Stack trace:
+#0 C:\USR\basic\vendor\yiisoft\yii2\base\InlineAction.php(55): ::call_user_func_array:{C:\USR\basic\vendor\yiisoft\yii2\base\InlineAction.php:55}()
+#1 C:\USR\basic\vendor\yiisoft\yii2\base\Controller.php(154): yii\base\InlineAction->runWithParams()
+#2 C:\USR\basic\vendor\yiisoft\yii2\console\Controller.php(119): yii\base\Controller->runAction()
+#3 C:\USR\basic\vendor\yiisoft\yii2\base\Module.php(454): yii\console\Controller->runAction()
+#4 C:\USR\basic\vendor\yiisoft\yii2\console\Application.php(176): yii\base\Module->runAction()
+#5 C:\USR\basic\vendor\yiisoft\yii2\console\Application.php(143): yii\console\Application->runAction()
+#6 C:\USR\basic\vendor\yiisoft\yii2\base\Application.php(375): yii\console\Application->handleRequest()
+#7 C:\USR\basic\yii(20): yii\base\Application->run()
+#8 {main}

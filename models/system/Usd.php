@@ -10,6 +10,9 @@ use Yii;
  * @property integer $id
  * @property string $name_usd
  * @property string $dns_name
+ * @property integer $work_usd
+ * @property string $login
+ * @property string $pass
  *
  * @property Device[] $devices
  */
@@ -30,8 +33,11 @@ class Usd extends \yii\db\ActiveRecord
     {
         return [
             [['name_usd', 'dns_name'], 'required'],
+            [['work_usd'], 'boolean'],
             [['name_usd'], 'string', 'max' => 30],
             [['dns_name'], 'string', 'max' => 64],
+            [['login'], 'string', 'max' => 20],
+            [['pass'], 'string', 'max' => 40],
         ];
     }
 
@@ -44,6 +50,10 @@ class Usd extends \yii\db\ActiveRecord
             'id' => 'Идентификатор',
             'name_usd' => 'Название сборщика',
             'dns_name' => 'Адрес',
+            'work_usd' => 'В работе',
+            'login' => 'Логин',
+            'pass' => 'Пароль',
+            'workValue' => 'В работе',
         ];
     }
 
@@ -54,4 +64,8 @@ class Usd extends \yii\db\ActiveRecord
     {
         return $this->hasMany(Device::className(), ['id_usd' => 'id']);
     }
+    
+    public function getWorkValue() {
+      return $this->work_usd ? 'Работает' : 'Отключено';
+   }
 }
