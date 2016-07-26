@@ -4,6 +4,7 @@ namespace app\models\system;
 
 //use Yii;
 use yii\helpers\Html;
+use yii\helpers\Url;
 use creocoder\nestedsets\NestedSetsBehavior;
 
 /**
@@ -87,70 +88,94 @@ class Tree extends \yii\db\ActiveRecord {
       return new TreeQuery(get_called_class());
    }
 
-   //Возвращает вложенный массив для дерева
-   public static function parseData($id=NULL) {
+   /* Возвращает вложенный массив для дерева
+    * $ids - Номер id для выделения
+    * $id - Номер root
+    * $select - True: все выбираемые, False: только вложения    
+    */
+
+   public static function nparseData($ids = null, $id = NULL, $select = FALSE) {
       $masTree = Tree::find()
-              ->where(!is_null($id)?['root' => $id]:'')
+              ->select(['id', 'root', 'lvl', 'name as text', 'id_device'])
+              ->where(!is_null($id) ? ['root' => $id] : '')
               ->orderBy(['root' => SORT_ASC, 'lft' => SORT_ASC])
               ->createCommand()
-              ->queryAll();
-      ;
+              ->queryAll();     
 
-      return self::rec($masTree);
+      return self::nrec($ids, $masTree, null, $select);
       //print_r($masTree);
    }
 
-   //строит массив рекурсией
-   private static function rec($in, $root = -1, $lvl = -1, $name = NULL) {
+   //строит массив рекурсией +вспомогательный массив
+   private static function nrec($ids, $in, $dop = NULL, $select = FALSE) {
       $out = [];
       $vr = [];
       $count = count($in);
       foreach ($in as $cat) {
-         if ($root < 0) {
-            $root = $cat['root'];
-            $lvl = $cat['lvl'];
-            $name = Html::encode($cat['name']);            
+         if (is_null($dop)) {
+            $dop = $cat;
          } else {
-            if ($root != $cat['root']) {//Новый корень
+            if ($dop['root'] != $cat['root']) {//Новый корень
                if (empty($vr)) {
-                  array_push($out, ['text' => $name]);
+                  $dop['selectable'] = TRUE;
+                  $dop['href'] = Url::to(['', 'id' => $dop['id']]);
+                  array_push($out, $dop);
                   $count--;
                } else {
-                  array_push($out, ['text' => $name,
-                      'nodes' => self::rec($vr, $root, $nlvl, $name)]);
+                  $dop['lvl'] = $nlvl;
+                  $dop['selectable'] = $select;
+                  $dop['href'] = Url::to(['', 'id' => $dop['id']]);
+                  $dop['nodes'] = self::nrec($ids, $vr, $dop, $select);
+                  array_push($out, $dop);
                   $count--;
                }
                $vr = [];
-               $root = $cat['root'];
-               $name = Html::encode($cat['name']);
-               $nlvl = '';               
-            } elseif ($lvl != $cat['lvl']) {//Новый уровень, все последующие заносим в массив
+               $dop = $cat;
+               $nlvl = '';
+            } elseif ($dop['lvl'] != $cat['lvl']) {//Новый уровень, все последующие заносим в массив
                if (empty($nlvl)) {
                   $nlvl = $cat['lvl'];
                }
-               array_push($vr, ['name' => Html::encode($cat['name']), 'lvl' => $cat['lvl'], 'root' => $cat['root']]);
-            } elseif ($lvl == $cat['lvl']) {
-               if (empty($vr))  {
-                     array_push($out, ['text' => Html::encode($cat['name'])]);
-                     $count--;                  
+               array_push($vr, $cat);
+            } elseif ($dop['lvl'] == $cat['lvl']) {
+               if (empty($vr)) {
+                  $dop['text'] = $cat['text'];
+                  $dop['selectable'] = TRUE;
+                  $dop['href'] = Url::to(['', 'id' => $cat['id']]);
+                  if ($dop['id'] == $ids) {
+                     $dop['state'] = ['selected' => true];
+                  }
+                  array_push($out, $dop);
+                  $count--;
                } else {
                   array_pop($out);
-                  array_push($out, ['text' => $name,
-                      'nodes' => self::rec($vr, $root, $nlvl, $name)]);
+                  $dop['lvl'] = $nlvl;
+                  $dop['selectable'] = $select;
+                  $dop['href'] = Url::to(['', 'id' => $dop['id']]);
+                  $dop['nodes'] = self::nrec($ids, $vr, $dop, $select);
+                  array_push($out, $dop);
                   $count--;
                }
                $vr = [];
-               $root = $cat['root'];
-               $name = Html::encode($cat['name']);
+               $dop = $cat;
             }
          }
       }
       if ($count > 0) {
          if (empty($vr)) {
-            array_push($out, ['text' => Html::encode($cat['name'])]);
+            $dop['text'] = $cat['text'];
+            $dop['selectable'] = TRUE;
+            $dop['href'] = Url::to(['', 'id' => $cat['id']]);
+            if ($dop['id'] == $ids) {
+               $dop['state'] = ['selected' => true];
+            }
+            array_push($out, $dop);
          } else {
-            array_push($out, ['text' => $name,
-                'nodes' => self::rec($vr, $root, $nlvl, $name)]);
+            $dop['lvl'] = $nlvl;
+            $dop['selectable'] = $select;
+            $dop['href'] = Url::to(['', 'id' => $dop['id']]);
+            $dop['nodes'] = self::nrec($ids, $vr, $dop, $select);
+            array_push($out, $dop);
          }
       }
       return $out;

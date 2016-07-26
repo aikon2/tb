@@ -12,9 +12,6 @@ use app\assets\AppAsset;
 use app\components\AlertWidget;
 use webvimark\modules\UserManagement\models\User;
 use nirvana\showloading\ShowLoadingAsset;
-use app\models\system\Tree;
-use execut\widget\TreeView;
-use yii\web\JsExpression;
 
 ShowLoadingAsset::register($this);
 
@@ -52,7 +49,8 @@ AppAsset::register($this);
                                  ['label' => 'Test', 'url' => ['system/test']],
                                  ['label' => 'УСПД', 'url' => ['system/action']],
                                  ['label' => 'Данные', 'url' => ['system/out']],
-                                 ['label' => 'Получить', 'url' => ['system/in']]
+                                 ['label' => 'Получить', 'url' => ['system/in']],
+                                 ['label' => 'Дерево', 'url' => ['/tree']]
                              ]
                          ]
                          ) : (''),
@@ -93,7 +91,7 @@ AppAsset::register($this);
                               'items' => [
                                   [
                                       'label' => '<span class="glyphicon glyphicon-tasks"></span> &nbsp; Данные',
-                                      'url' => ['#']
+                                      'url' => ['system/data']
                                   ],
                                   [
                                       'label' => '<span class="glyphicon glyphicon-print"></span> &nbsp; Отчеты',
@@ -151,8 +149,12 @@ AppAsset::register($this);
                     </div>
                     <?php
                     ActiveForm::end();
+                   * 
+                   */
 
-                    //Панель объектов
+
+                  //Панель объектов
+                  /*
                     echo Collapse::widget([
                     'items' => [
                     [
@@ -167,36 +169,19 @@ AppAsset::register($this);
                     ]);
                    * 
                    */
-
-//Дерево объектов
-//$data=Tree::parseData([1,5]);
-                  $data = Tree::parseData();
-                  $onSelect = new JsExpression(<<<JS
-function (undefined, item) {
-    console.log(item);
-}
-JS
-                  );
-                  $groupsContent = TreeView::widget([
-                              'data' => $data,
-                              //'size' => TreeView::SIZE_SMALL,
-                              'header' => 'Объекты',                              
-                              'searchOptions' => [
-                                  'inputOptions' => [
-                                      'placeholder' => 'Поиск...'
-                                  ],
-                              ],
-                              'clientOptions' => [
-                                  'onNodeSelected' => $onSelect,
-                                  'levels' => 1,
-                              //'selectedBackColor' => 'rgb(40, 153, 57)',
-                              //'borderColor' => '#ff',
-                              ],
-                  ]);
-
-
-                  echo $groupsContent;
                   ?>
+
+                  <?php
+                  //Выводит дерево объектов когда нужно
+                  if (isset($this->params['tree'])) {
+                     ?>
+                     <?=
+                     $this->render('/system/_tree', [
+                         'data' => $this->params['tree']
+                     ]);
+                  }
+                  ?>
+
 
                </div>
                <?php /* End Sidebar content */ ?>

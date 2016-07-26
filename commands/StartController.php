@@ -54,20 +54,16 @@ class StartController extends Controller {
       }
    }
 
-   public function actionTest() {
+   public function actionTest($id=0) {
       //echo "Start " . $this->udate('Y-m-d H:i:s.u T') . "\n";
       //(new Start)->test();      
       //echo "End " . $this->udate('Y-m-d H:i:s.u T');      
       //$vr=[];
-      array_push($vr, ['name' => '1',
-                'lvl' => '2',
-                'root' => '3']);
-      array_push($vr, ['name' => '4',
-                'lvl' => '5',
-                'root' => '6']);      
-      print_r($vr);
-      foreach ($vr as $id=>$cat){
-         print_r($cat['name']);
+      
+      if ($id>0){
+         echo "bolshe";
+      }  else {
+         echo "net";
       }
    }
    
